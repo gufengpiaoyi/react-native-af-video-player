@@ -353,7 +353,10 @@ class Video extends Component {
       inlineOnly,
       playInBackground,
       playWhenInactive,
-      videoStyle
+      videoStyle,
+      barStyle,
+      hideFullScreenControl,
+      controlDuration
     } = this.props
 
     const inline = {
@@ -380,7 +383,7 @@ class Video extends Component {
         <StatusBar hidden={fullScreen} />
         {
           ((loading && placeholder) || currentTime < 0.01) &&
-          <Image resizeMode="cover" style={styles.image} {...checkSource(placeholder)} />
+          <Image resizeMode="cover" style={[styles.image,fullScreen ? {} : videoStyle]} {...checkSource(placeholder)} />
         }
         <VideoPlayer
           {...checkSource(url)}
@@ -423,6 +426,9 @@ class Video extends Component {
           onMorePress={() => onMorePress()}
           theme={setTheme}
           inlineOnly={inlineOnly}
+          hideFullScreenControl={hideFullScreenControl}
+          barStyle={fullScreen ? {} : barStyle}
+          controlDuration={controlDuration}
         />
       </Animated.View>
     )
@@ -448,6 +454,10 @@ Video.propTypes = {
     PropTypes.number
   ]),
   videoStyle: PropTypes.oneOfType([
+    PropTypes.object,
+    PropTypes.number
+  ]),
+  barStyle: PropTypes.oneOfType([
     PropTypes.object,
     PropTypes.number
   ]),
@@ -477,13 +487,16 @@ Video.propTypes = {
   logo: PropTypes.string,
   title: PropTypes.string,
   theme: PropTypes.object,
-  resizeMode: PropTypes.string
+  resizeMode: PropTypes.string,
+  hideFullScreenControl: PropTypes.bool,
+  controlDuration: PropTypes.number
 }
 
 Video.defaultProps = {
   placeholder: undefined,
   style: {},
   videoStyle: {},
+  barStyle: {},
   error: true,
   loop: false,
   autoPlay: false,
@@ -507,7 +520,9 @@ Video.defaultProps = {
   logo: undefined,
   title: '',
   theme: defaultTheme,
-  resizeMode: 'contain'
+  resizeMode: 'contain',
+  hideFullScreenControl: false,
+  controlDuration: 3
 }
 
 export default Video

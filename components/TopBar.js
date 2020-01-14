@@ -8,7 +8,6 @@ import {
   Image
 } from 'react-native'
 
-import LinearGradient from 'react-native-linear-gradient'
 import { ToggleIcon } from './'
 import { checkSource } from './utils'
 
@@ -17,7 +16,8 @@ const backgroundColor = 'transparent'
 const styles = StyleSheet.create({
   container: {
     height: 35,
-    justifyContent: 'center'
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.1)'
   },
   row: {
     flexDirection: 'row',
@@ -44,10 +44,11 @@ const TopBar = (props) => {
     more,
     title,
     theme,
-    onMorePress
+    onMorePress,
+    barStyle
   } = props
   return (
-    <LinearGradient colors={['rgba(0,0,0,0.75)', 'rgba(0,0,0,0)']} style={styles.container}>
+    <View style={[styles.container,barStyle,{borderBottomLeftRadius: 0, borderBottomRightRadius: 0}]}>
       <View style={styles.row}>
         { logo && <Image style={styles.logo} resizeMode="contain" {...checkSource(logo)} />}
         <Text
@@ -69,7 +70,7 @@ const TopBar = (props) => {
           />
         }
       </View>
-    </LinearGradient>
+    </View>
   )
 }
 
@@ -78,7 +79,11 @@ TopBar.propTypes = {
   logo: PropTypes.string.isRequired,
   more: PropTypes.bool.isRequired,
   onMorePress: PropTypes.func.isRequired,
-  theme: PropTypes.object.isRequired
+  theme: PropTypes.object.isRequired,
+  barStyle: PropTypes.oneOfType([
+    PropTypes.object,
+    PropTypes.number
+  ]),
 }
 
 export { TopBar }

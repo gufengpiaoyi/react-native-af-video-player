@@ -128,7 +128,8 @@ class Controls extends Component {
       duration,
       theme,
       inlineOnly,
-      hideFullScreenControl
+      hideFullScreenControl,
+      barStyle
     } = this.props
 
     const { center, ...controlBar } = theme
@@ -142,6 +143,7 @@ class Controls extends Component {
             more={more}
             onMorePress={() => onMorePress()}
             theme={{ title: theme.title, more: theme.more }}
+            barStyle={barStyle}
           />
           <Animated.View style={[styles.flex, { transform: [{ scale: this.scale }] }]}>
             <PlayButton
@@ -166,6 +168,7 @@ class Controls extends Component {
             theme={controlBar}
             inlineOnly={inlineOnly}
             hideFullScreenControl={hideFullScreenControl}
+            barStyle={barStyle}
           />
         </Animated.View>
       </Touchable>
@@ -200,7 +203,12 @@ Controls.propTypes = {
   duration: PropTypes.number.isRequired,
   title: PropTypes.string.isRequired,
   logo: PropTypes.string.isRequired,
-  theme: PropTypes.object.isRequired
+  theme: PropTypes.object.isRequired,
+  barStyle: PropTypes.oneOfType([
+    PropTypes.object,
+    PropTypes.number
+  ]),
+  controlDuration: PropTypes.number
 }
 
 export { Controls }
