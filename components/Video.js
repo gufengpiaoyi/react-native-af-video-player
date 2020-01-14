@@ -204,7 +204,10 @@ class Video extends Component {
   }
 
   pause() {
-    if (!this.state.paused) this.togglePlay()
+    if (!this.state.paused) {
+      this.togglePlay()
+      this.controls.showControls()
+    }
   }
 
   play() {
