@@ -237,33 +237,33 @@ class Video extends Component {
 
   toggleFS() {
     this.setState({ fullScreen: !this.state.fullScreen }, () => {
-      Orientation.getOrientation((e, orientation) => {
-        if (this.state.fullScreen) {
+      if (this.state.fullScreen) {
+        this.props.onFullScreen(this.state.fullScreen)
+        if (this.props.rotateToFullScreen) Orientation.lockToLandscape()
+        Orientation.getOrientation((e, orientation) => {
           const initialOrient = Orientation.getInitialOrientation()
           const height = orientation !== initialOrient ?
             Win.width : Win.height
-          this.props.onFullScreen(this.state.fullScreen)
-          if (this.props.rotateToFullScreen) Orientation.lockToLandscape()
-          this.animToFullscreen(height)
-        } else {
-          if (this.props.fullScreenOnly) {
-            this.setState({ paused: true }, () => this.props.onPlay(!this.state.paused))
-          }
-          this.props.onFullScreen(this.state.fullScreen)
-          if (this.props.rotateToFullScreen) Orientation.lockToPortrait()
-          this.animToInline()
-          setTimeout(() => {
-            if (!this.props.lockPortraitOnFsExit) Orientation.unlockAllOrientations()
-          }, 1500)
+            this.animToFullscreen(height)
+        })
+      } else {
+        if (this.props.fullScreenOnly) {
+          this.setState({ paused: true }, () => this.props.onPlay(!this.state.paused))
         }
-      })
+        this.props.onFullScreen(this.state.fullScreen)
+        if (this.props.rotateToFullScreen) Orientation.lockToPortrait()
+        this.animToInline()
+        setTimeout(() => {
+          if (!this.props.lockPortraitOnFsExit) Orientation.unlockAllOrientations()
+        }, 1500)
+      }
     })
   }
 
   animToFullscreen(height) {
     Animated.parallel([
-      Animated.timing(this.animFullscreen, { toValue: height, duration: 200 }),
-      Animated.timing(this.animInline, { toValue: height, duration: 200 })
+      Animated.timing(this.animFullscreen, { toValue: height, duration: 100 }),
+      Animated.timing(this.animInline, { toValue: height, duration: 100 })
     ]).start()
   }
 
@@ -353,13 +353,13 @@ class Video extends Component {
       inlineOnly,
       playInBackground,
       playWhenInactive,
-      controlDuration,
-      hideFullScreenControl
+      videoStyle
     } = this.props
 
     const inline = {
       height: inlineHeight,
-      alignSelf: 'stretch'
+      alignSelf: 'stretch',
+      ...videoStyle
     }
 
     const setTheme = {
@@ -423,8 +423,6 @@ class Video extends Component {
           onMorePress={() => onMorePress()}
           theme={setTheme}
           inlineOnly={inlineOnly}
-          controlDuration={controlDuration}
-          hideFullScreenControl={hideFullScreenControl}
         />
       </Animated.View>
     )
@@ -449,6 +447,10 @@ Video.propTypes = {
     PropTypes.object,
     PropTypes.number
   ]),
+  videoStyle: PropTypes.oneOfType([
+    PropTypes.object,
+    PropTypes.number
+  ]),
   error: PropTypes.oneOfType([
     PropTypes.bool,
     PropTypes.object
@@ -456,7 +458,6 @@ Video.propTypes = {
   loop: PropTypes.bool,
   autoPlay: PropTypes.bool,
   inlineOnly: PropTypes.bool,
-  hideFullScreenControl: PropTypes.bool,
   fullScreenOnly: PropTypes.bool,
   playInBackground: PropTypes.bool,
   playWhenInactive: PropTypes.bool,
@@ -476,13 +477,13 @@ Video.propTypes = {
   logo: PropTypes.string,
   title: PropTypes.string,
   theme: PropTypes.object,
-  resizeMode: PropTypes.string,
-  controlDuration: PropTypes.number,
+  resizeMode: PropTypes.string
 }
 
 Video.defaultProps = {
   placeholder: undefined,
   style: {},
+  videoStyle: {},
   error: true,
   loop: false,
   autoPlay: false,
@@ -506,8 +507,7 @@ Video.defaultProps = {
   logo: undefined,
   title: '',
   theme: defaultTheme,
-  resizeMode: 'contain',
-  controlDuration: 3,
+  resizeMode: 'contain'
 }
 
 export default Video
